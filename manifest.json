@@ -1,0 +1,6 @@
+{
+  "name": "Font Fascia",
+  "api": "1.0.0",
+  "main": "fontFascia.main.js",
+  "ui": "fontFascia.html"
+}
