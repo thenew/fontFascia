@@ -1,96 +1,124 @@
 <html>
-    <head>
-        <title>fontFascia</title>
+  <head>
+    <title>fontFascia</title>
 
-        <!-- Normalize the CSS -->
-        <link
-            rel="stylesheet"
-            href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"
-        />
+    <!-- Normalize the CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css"
+    />
 
-        <!-- Include Figma UI CSS -->
-        <link
-            rel="stylesheet"
-            href="https://static.figma.com/api/figma-extension-api-0.0.1.css"
-        />
+    <!-- Include Figma UI CSS -->
+    <link
+      rel="stylesheet"
+      href="https://static.figma.com/api/figma-extension-api-0.0.1.css"
+    />
 
-        <!-- Also include the "Inter" font for consistency with Figma -->
-        <style>
-            @font-face {
-                font-family: 'Inter';
-                font-style: normal;
-                font-weight: 400;
-                src: url('https://rsms.me/inter/font-files/Inter-Regular.woff2?v=3.7')
-                        format('woff2'),
-                    url('https://rsms.me/inter/font-files/Inter-Regular.woff?v=3.7')
-                        format('woff');
-            }
+    <!-- Also include the "Inter" font for consistency with Figma -->
+    <style>
+      @font-face {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 400;
+        src: url('https://rsms.me/inter/font-files/Inter-Regular.woff2?v=3.7')
+            format('woff2'),
+          url('https://rsms.me/inter/font-files/Inter-Regular.woff?v=3.7')
+            format('woff');
+      }
 
-            @font-face {
-                font-family: 'Inter';
-                font-style: normal;
-                font-weight: 500;
-                src: url('https://rsms.me/inter/font-files/Inter-Medium.woff2?v=3.7')
-                        format('woff2'),
-                    url('https://rsms.me/inter/font-files/Inter-Medium.woff2?v=3.7')
-                        format('woff');
-            }
+      @font-face {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 500;
+        src: url('https://rsms.me/inter/font-files/Inter-Medium.woff2?v=3.7')
+            format('woff2'),
+          url('https://rsms.me/inter/font-files/Inter-Medium.woff2?v=3.7')
+            format('woff');
+      }
 
-            @font-face {
-                font-family: 'Inter';
-                font-style: normal;
-                font-weight: 600;
-                src: url('https://rsms.me/inter/font-files/Inter-SemiBold.woff2?v=3.7')
-                        format('woff2'),
-                    url('https://rsms.me/inter/font-files/Inter-SemiBold.woff2?v=3.7')
-                        format('woff');
-            }
+      @font-face {
+        font-family: 'Inter';
+        font-style: normal;
+        font-weight: 600;
+        src: url('https://rsms.me/inter/font-files/Inter-SemiBold.woff2?v=3.7')
+            format('woff2'),
+          url('https://rsms.me/inter/font-files/Inter-SemiBold.woff2?v=3.7')
+            format('woff');
+      }
 
-            /* Apply font to your UI */
-            body {
-                font-family: 'Inter', 'Roboto', sans-serif;
-                margin: 0;
-            }
+      /* Apply font to your UI */
+      body {
+        font-family: 'Inter', 'Roboto', sans-serif;
+        margin: 0;
+      }
 
-            /* Also override Figma's API CSS with Inter. */
-            input[type='text'],
-            input,
-            textarea,
-            select {
-                font-family: inherit;
-            }
+      /* Also override Figma's API CSS with Inter. */
+      input[type='text'],
+      input,
+      textarea,
+      select {
+        font-family: inherit;
+      }
 
-            /* Figmatism default styles */
-            a {
-                color: #18a0fb;
-                text-decoration: none;
-            }
+      /* Figmatism default styles */
+      a {
+        color: #18a0fb;
+        text-decoration: none;
+      }
 
-            ul {
-                margin: 0;
-            }
+      a:focus,
+      a:hover {
+        color: #7b61ff;
+      }
 
-            .fontItem {
-                padding: 12px 12px;
-                box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.1);
-            }
+      ul {
+        margin: 0;
+      }
 
-            .fontLabel {
-                font-weight: bold;
-                line-height: 32px;
-            }
+      .loading {
+        padding: 40px;
+        text-align: center;
+      }
 
-            .nodeLink {
-                display: inline-block;
-                max-width: 100%;
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis;
-            }
-        </style>
-    </head>
-    <body>
-        <div id="content"></div>
-        <script src="fontFascia.ui.js"></script>
-    </body>
+      /* Plugin Styles */
+
+      .warning {
+        display: inline-block;
+        margin-left: 10px;
+      }
+
+      .fontList {
+        padding: 10px 0 50px;
+      }
+
+      .fontItem {
+        padding: 12px 12px;
+        box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.1);
+      }
+
+      .fontLabel {
+        font-size: 13px;
+        font-weight: bold;
+        line-height: 32px;
+      }
+
+      .counter {
+        font-size: 11px;
+      }
+
+      .nodeLink {
+        display: inline-block;
+        max-width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="content">
+      <div class="loading">Please wait</div>
+    </div>
+    <script src="fontFascia.ui.js"></script>
+  </body>
 </html>

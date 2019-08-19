@@ -1,73 +1,89 @@
 /* The UI script */
-console.log('%c UI ', 'background: #000; color: #ffff00; padding: 1px 0;')
 
 // init
-// parent.postMessage({ pluginMessage: { type: 'init' } }, '*')
+parent.postMessage({ pluginMessage: { type: 'init' } }, '*')
 
 onmessage = event => {
-    const message = event.data.pluginMessage
+  const message = event.data.pluginMessage
 
-    const contentEl = document.getElementById('content')
+  const contentEl = document.getElementById('content')
 
-    if (message.content) {
-        const list = document.createElement('div')
+  if (message.content) {
+    const list = document.createElement('div')
+    list.className = `fontList`
+    let count = 1
 
-        Object.keys(message.content).map(key => {
-            let listItem = document.createElement('div')
-            listItem.className = 'fontItem'
+    Object.keys(message.content).map(key => {
+      let listItem = document.createElement('div')
+      listItem.className = 'fontItem'
 
-            let name = document.createElement('div')
-            name.className = 'fontLabel'
+      let name = document.createElement('div')
+      name.className = 'fontLabel'
+      //   name.style.fontFamily = message.content[key].fontFamily
 
-            name.append(
-                `${message.content[key].fontFamily} ${
-                    message.content[key].fontStyle
-                }`
-            )
+      // counter
+      let counter = document.createElement(`span`)
+      counter.className = `counter`
+      counter.innerText = `${count}. `
+      name.append(counter)
+      count++
 
-            // nodes
-            const refList = document.createElement('ul')
+      name.append(
+        `${message.content[key].fontFamily} ${message.content[key].fontStyle}`
+      )
 
-            message.content[key].references.map((reference, index) => {
-                let refItem = document.createElement('li')
+      // warning
+      let warning = document.createElement('span')
+      warning.className = `warning`
+      if (message.content[key].references.length < 2) {
+        warning.title = `Only one use`
+        warning.innerText = `⚠️`
+      }
+      name.append(warning)
 
-                if (index === 9) {
-                    refItem.append('…')
-                    refList.append(refItem)
-                }
-                if (index > 8) return
+      // nodes
+      const refList = document.createElement('ul')
 
-                const { nodeName } = reference
-                let link = document.createElement('a')
-                link.href = ' '
-                link.className = 'nodeLink'
+      message.content[key].references.map((reference, index) => {
+        let refItem = document.createElement('li')
 
-                link.append(nodeName)
+        if (index === 9) {
+          refItem.append('…')
+          refList.append(refItem)
+        }
+        if (index > 8) return
 
-                link.addEventListener(`click`, event => {
-                    event.preventDefault()
-                    parent.postMessage({ pluginMessage: 'anything here' }, '*')
-                    parent.postMessage(
-                        {
-                            pluginMessage: {
-                                type: 'zoom',
-                                data: reference
-                            }
-                        },
-                        '*'
-                    )
-                })
+        const { nodeName } = reference
+        let link = document.createElement('a')
+        link.href = ' '
+        link.className = 'nodeLink'
 
-                refItem.append(link)
-                refList.append(refItem)
-            })
+        link.append(nodeName)
 
-            listItem.append(name)
-            listItem.append(refList)
-            list.append(listItem)
+        link.addEventListener(`click`, event => {
+          event.preventDefault()
+          parent.postMessage({ pluginMessage: 'anything here' }, '*')
+          parent.postMessage(
+            {
+              pluginMessage: {
+                type: 'zoom',
+                data: reference
+              }
+            },
+            '*'
+          )
         })
 
-        contentEl.innerHTML = ``
-        contentEl.append(list)
-    }
+        refItem.append(link)
+        refList.append(refItem)
+      })
+
+      listItem.append(name)
+      listItem.append(refList)
+      list.append(listItem)
+    })
+
+    contentEl.innerHTML = ``
+    contentEl.append(list)
+  }
 }
