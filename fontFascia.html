@@ -82,28 +82,62 @@
 
       /* Plugin Styles */
 
-      .warning {
-        display: inline-block;
-        margin-left: 10px;
-      }
-
       .fontList {
         padding: 10px 0 50px;
       }
 
       .fontItem {
-        padding: 12px 12px;
         box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.1);
       }
 
+      .fontItem.active {
+        padding-bottom: 12px;
+      }
+
       .fontLabel {
+        display: flex;
+        justify-content: stretch;
+        align-items: baseline;
+        padding: 12px 12px;
         font-size: 13px;
         font-weight: bold;
         line-height: 32px;
+        cursor: pointer;
+      }
+
+      .icon {
+        display: inline-block;
+        margin-right: 10px;
+        transform: rotate(-90deg);
+      }
+
+      .fontItem.active .icon {
+        transform: rotate(0deg);
       }
 
       .counter {
         font-size: 11px;
+        margin-right: 8px;
+      }
+
+      .warning {
+        display: inline-block;
+        margin-left: 10px;
+      }
+
+      .refNumber {
+        display: inline-block;
+        margin-left: auto;
+      }
+
+      .refList {
+        padding-right: 12px;
+        height: 0;
+        overflow: hidden;
+      }
+
+      .fontItem.active .refList {
+        height: auto;
       }
 
       .nodeLink {

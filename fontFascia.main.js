@@ -81,13 +81,13 @@ function saveFontInfos(node, pageNode) {
     fontInfos[id] = fontInfo
   } else {
     // add uniq reference
-    if (
-      fontInfos[id].references.filter(
-        ref => ref.nodeName === reference.nodeName
-      ).length === 0
-    ) {
+    // if (
+    //   fontInfos[id].references.filter(
+    //     ref => ref.nodeName === reference.nodeName
+    //   ).length === 0
+    // ) {
       fontInfos[id].references = [...fontInfos[id].references, reference]
-    }
+    // }
   }
 }
 
@@ -96,6 +96,7 @@ function initSearch() {
     pageNode
       .findAll(node => node.type === `TEXT`)
       .map(node => {
+        console.log('node: ', node)
         if (node.fontName === figma.mixed) {
           const fontInfosMixed = getFontInfosFromMixed(node)
           fontInfosMixed.forEach(node => saveFontInfos(node, pageNode))
