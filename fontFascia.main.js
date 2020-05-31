@@ -1,8 +1,14 @@
 /* The main script */
-
+console.log('main')
 // Open the UI window
 figma.showUI(__html__, { width: 400, height: 700 })
 
+let currentPage
+let scope = `all`
+let settings = {
+  order: `descending`,
+  sort: `count`
+}
 let fontInfos = {}
 
 function getFontInfosFromMixed(node) {
@@ -91,12 +97,22 @@ function saveFontInfos(node, pageNode) {
   }
 }
 
-function initSearch() {
-  figma.root.children.map(pageNode => {
+function init() {
+  currentPage = figma.currentPage
+  search()
+}
+
+function search() {
+  console.log('settings: ', settings)
+  // reset
+  fontInfos = {}
+  const containers = scope === `all` ? figma.root.children : [currentPage]
+
+  containers.map(pageNode => {
     pageNode
       .findAll(node => node.type === `TEXT`)
       .map(node => {
-        console.log('node: ', node)
+        // console.log('node: ', node)
         if (node.fontName === figma.mixed) {
           const fontInfosMixed = getFontInfosFromMixed(node)
           fontInfosMixed.forEach(node => saveFontInfos(node, pageNode))
@@ -106,21 +122,33 @@ function initSearch() {
       })
   })
 
+  // TODO sort array by settings
+  // TODO move sorting out of the search function
+  console.log('fontInfos: ', fontInfos)
+
   fontInfos = objectSort(fontInfos)
 
   figma.ui.postMessage({ type: `fontInfos`, content: fontInfos })
 }
 
+// events
+figma.on("currentpagechange", () => {
+  console.log('figma.currentPage: ', figma.currentPage)
+  currentPage = figma.currentPage
+  search()
+})
+
 // messages
 
 figma.ui.onmessage = (pluginMessage, props) => {
-  //   console.log('pluginMessage: ', pluginMessage)
+  // console.log('pluginMessage: ', pluginMessage)
 
   const { type, data } = pluginMessage
   switch (type) {
     case `init`:
-      initSearch()
+      init()
       break
+
     case `zoom`:
       const { pageNodeId, nodeId } = data
       const node = { id: nodeId }
@@ -128,6 +156,19 @@ figma.ui.onmessage = (pluginMessage, props) => {
       figma.viewport.scrollAndZoomIntoView([node])
       figma.currentPage.selection = [node]
 
+      break
+
+    case `formUpdate`:
+      const { scopePage = false } = data
+      scope = scopePage ? `page` : `all`
+      search()
+      break
+
+    case `sort`:
+      const { sort = `count`, order = `descending` } = data
+      settings.sort = sort
+      settings.order = order
+      search()
       break
 
     default:

@@ -82,7 +82,37 @@
 
       /* Plugin Styles */
 
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        min-height: 30px;
+        border-bottom: 1px solid #e5e5e5;
+      }
+
+      .header-button {
+        display: flex;
+        align-items: center;
+        border: none;
+      }
+
+      .header-icon {
+        padding-left: 10px;
+        opacity: 0;
+        transform-origin: center center;
+      }
+
+      .header-button[aria-sort='ascending'] .header-icon,
+      .header-button[aria-sort='descending'] .header-icon {
+        opacity: 1;
+      }
+
+      .header-button[aria-sort='ascending'] .header-icon {
+        transform: scaleY(-1);
+      }
+
       .fontList {
+        display: block;
         padding: 10px 0 50px;
       }
 
@@ -150,9 +180,185 @@
     </style>
   </head>
   <body>
+    <header class="settings">
+      <form action="">
+        <label for="scope">
+          <input id="scope" type="checkbox" name="scope" class="js-input-scope">
+          <span class="label-text">Search in current page only</span>
+        </label>
+      </form>
+    </header>
+    <div class="header">
+      <button type="button" class="header-button js-button-sort" value="name" >
+        <span class="">Font name</span>
+        <span class="header-icon"><svg class="svg" width="6" height="6" viewBox="0 0 6 6" xmlns="http://www.w3.org/2000/svg"><path d="M3 5l3-4H0l3 4z" fill-rule="nonzero" fill-opacity="1" fill="#000" stroke="none"></path></svg></span>
+      </button>
+      <button type="button" class="header-button js-button-sort" value="count" aria-sort="descending">
+        <span class="">Count</span>
+        <span class="header-icon"><svg class="svg" width="6" height="6" viewBox="0 0 6 6" xmlns="http://www.w3.org/2000/svg"><path d="M3 5l3-4H0l3 4z" fill-rule="nonzero" fill-opacity="1" fill="#000" stroke="none"></path></svg></span>
+      </button>
+    </div>
     <div id="content">
       <div class="loading">Please wait</div>
     </div>
-    <script src="fontFascia.ui.js"></script>
+    <script>
+      /* The UI script */
+
+      // init
+      parent.postMessage({ pluginMessage: { type: 'init' } }, '*')
+
+      // form
+      const inputScope = document.querySelector('.js-input-scope')
+      inputScope.addEventListener(`change`, event => {
+          parent.postMessage(
+            {
+              pluginMessage: {
+                type: 'formUpdate',
+                data: {
+                  scopePage: event.currentTarget.checked
+                }
+              }
+            },
+            '*'
+          )
+        })
+
+      // sort
+      const sortButtons = document.querySelectorAll('.js-button-sort')
+
+      sortButtons.forEach(button => {
+
+        button.addEventListener(`click`, event => {
+          event.preventDefault()
+
+          const sort = event.currentTarget.value
+          let order = event.currentTarget.getAttribute('aria-sort')
+          if(!order || order === `ascending`) {
+            order = `descending`
+          } else if(order === `descending`) {
+            order = `ascending`
+          }
+          event.currentTarget.setAttribute('aria-sort', order)
+
+          parent.postMessage(
+            {
+              pluginMessage: {
+                type: 'sort',
+                data: {
+                  'sort': sort,
+                  'order': order
+                }
+              }
+            },
+            '*'
+          )
+        })
+      })
+
+
+      onmessage = event => {
+        const message = event.data.pluginMessage
+
+        const contentEl = document.getElementById('content')
+
+        if (message.content) {
+          const list = document.createElement('div')
+          list.className = `fontList`
+          let count = 1
+
+          Object.keys(message.content).map(key => {
+            const refLength = message.content[key].references.length
+
+            let listItem = document.createElement('div')
+            listItem.className = 'fontItem'
+
+            let name = document.createElement('div')
+            name.className = 'fontLabel'
+            //   name.style.fontFamily = message.content[key].fontFamily
+
+            name.addEventListener(`click`, event => {
+              event.preventDefault()
+              listItem.classList.toggle(`active`)
+            })
+
+            // icon
+            var nameIcon = document.createElement('span')
+            nameIcon.className = `icon`
+            nameIcon.innerHTML = `<svg class="svg" width="6" height="6" viewBox="0 0 6 6" xmlns="http://www.w3.org/2000/svg"><path d="M3 5l3-4H0l3 4z" fill-rule="nonzero" fill-opacity="1" fill="#000" stroke="none"></path></svg>`
+            name.append(nameIcon)
+
+            // counter
+            let counter = document.createElement(`span`)
+            counter.className = `counter`
+            counter.innerText = `${count}. `
+            name.append(counter)
+            count++
+
+            name.append(
+              `${message.content[key].fontFamily} ${message.content[key].fontStyle}`
+            )
+
+            // warning
+            let warning = document.createElement('span')
+            warning.className = `warning`
+            if (refLength < 2) {
+              warning.title = `Only one use`
+              warning.innerText = `⚠️`
+            }
+            name.append(warning)
+
+            let refNumber = document.createElement('span')
+            refNumber.className = `refNumber`
+            refNumber.innerText = `${refLength} use${refLength > 1 ? `s` : ``}`
+            name.append(refNumber)
+
+            // nodes
+            const refList = document.createElement('ul')
+            refList.className = `refList`
+
+            message.content[key].references.map((reference, index) => {
+              let refItem = document.createElement('li')
+
+              if (index === 30) {
+                refItem.append('…')
+                refList.append(refItem)
+              }
+              if (index > 29) return
+
+              const { nodeName } = reference
+              let link = document.createElement('a')
+              link.href = ' '
+              link.className = 'nodeLink'
+
+              link.append(nodeName)
+
+              link.addEventListener(`click`, event => {
+                event.preventDefault()
+                parent.postMessage({ pluginMessage: 'anything here' }, '*')
+                parent.postMessage(
+                  {
+                    pluginMessage: {
+                      type: 'zoom',
+                      data: reference
+                    }
+                  },
+                  '*'
+                )
+              })
+
+              refItem.append(link)
+              refList.append(refItem)
+            })
+
+            listItem.append(name)
+            listItem.append(refList)
+            list.append(listItem)
+          })
+
+          contentEl.innerHTML = ``
+          contentEl.append(list)
+        }
+      }
+    </script>
   </body>
 </html>
