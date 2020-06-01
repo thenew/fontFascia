@@ -19,7 +19,12 @@ Useful to spot the oversights and keep a tidy fonts collection by showing all th
 
 ## Changelog
 
-### 1.1.0
+### 1.1.0 (1 June 2020)
 
 - Add "Search on current page only"
 - Add order by font name and number of uses
+
+
+### 1.0.0 (21 August 2019)
+
+- Initial release
