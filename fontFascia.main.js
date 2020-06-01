@@ -103,7 +103,7 @@ function init() {
 }
 
 function search() {
-  console.log('settings: ', settings)
+
   // reset
   fontInfos = {}
   const containers = scope === `all` ? figma.root.children : [currentPage]
@@ -112,7 +112,6 @@ function search() {
     pageNode
       .findAll(node => node.type === `TEXT`)
       .map(node => {
-        // console.log('node: ', node)
         if (node.fontName === figma.mixed) {
           const fontInfosMixed = getFontInfosFromMixed(node)
           fontInfosMixed.forEach(node => saveFontInfos(node, pageNode))
@@ -122,18 +121,33 @@ function search() {
       })
   })
 
-  // TODO sort array by settings
-  // TODO move sorting out of the search function
-  console.log('fontInfos: ', fontInfos)
+  fontInfos = sortSearch(fontInfos)
 
-  fontInfos = objectSort(fontInfos)
+  postSearch(fontInfos)
+}
 
+function sortSearch(fontInfos) {
+  let array =  [...Object.values(fontInfos)]
+
+  if(settings.sort === `name`) {
+    array = array.sort((a, b) => (a.fontFamily < b.fontFamily) ? 1 : -1)
+  } else if(settings.sort === `count`) {
+    array = array.sort((a, b) => (a.references.length > b.references.length) ? 1 : -1)
+  }
+
+  if(settings.order === `descending`) {
+    array = array.reverse()
+  }
+
+  return Object.assign({},array)
+}
+
+function postSearch(fontInfos) {
   figma.ui.postMessage({ type: `fontInfos`, content: fontInfos })
 }
 
 // events
 figma.on("currentpagechange", () => {
-  console.log('figma.currentPage: ', figma.currentPage)
   currentPage = figma.currentPage
   search()
 })
@@ -141,8 +155,6 @@ figma.on("currentpagechange", () => {
 // messages
 
 figma.ui.onmessage = (pluginMessage, props) => {
-  // console.log('pluginMessage: ', pluginMessage)
-
   const { type, data } = pluginMessage
   switch (type) {
     case `init`:
@@ -168,23 +180,13 @@ figma.ui.onmessage = (pluginMessage, props) => {
       const { sort = `count`, order = `descending` } = data
       settings.sort = sort
       settings.order = order
-      search()
+
+      fontInfos = sortSearch(fontInfos)
+
+      postSearch(fontInfos)
       break
 
     default:
       break
   }
-}
-
-// utils
-
-function objectSort(object) {
-  const ordered = {}
-  Object.keys(object)
-    .sort()
-    .forEach(key => {
-      ordered[key] = object[key]
-    })
-
-  return ordered
 }
