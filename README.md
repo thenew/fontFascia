@@ -1,6 +1,6 @@
 # Font Fascia
 
-Version: 1.0.4
+Version: 1.1.0
 
 Figma plugin
 
@@ -16,3 +16,10 @@ Useful to spot the oversights and keep a tidy fonts collection by showing all th
 ## Issues
 
 - Get `font-weight` value, not available in Figma API
+
+## Changelog
+
+### 1.1.0
+
+- Add "Search on current page only"
+- Add order by font name and number of uses
