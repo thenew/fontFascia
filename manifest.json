@@ -3,5 +3,6 @@
   "api": "1.0.0",
   "id": "746097413727734148",
   "main": "fontFascia.main.js",
-  "ui": "fontFascia.html"
+  "ui": "fontFascia.html",
+  "editorType": ["figjam","figma"]
 }

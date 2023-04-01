@@ -202,11 +202,6 @@
         margin-right: 8px;
       }
 
-      .warning {
-        display: inline-block;
-        margin-left: 10px;
-      }
-
       .refNumber {
         display: inline-block;
         margin-left: auto;
@@ -235,7 +230,7 @@
     <header class="settings">
       <form action="">
         <label for="scope" class="label-checkbox">
-          <input id="scope" type="checkbox" name="scope" class="js-input-scope">
+          <input id="scope" type="checkbox" checked name="scope" class="js-input-scope">
           <span class="label-text">Search in current page only</span>
         </label>
       </form>
@@ -352,15 +347,6 @@
             name.append(
               `${message.content[key].fontFamily} ${message.content[key].fontStyle}`
             )
-
-            // warning
-            let warning = document.createElement('span')
-            warning.className = `warning`
-            if (refLength < 2) {
-              warning.title = `Only one use`
-              warning.innerText = `⚠️`
-            }
-            name.append(warning)
 
             let refNumber = document.createElement('span')
             refNumber.className = `refNumber`

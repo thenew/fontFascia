@@ -4,7 +4,7 @@ console.log('main')
 figma.showUI(__html__, { width: 400, height: 700 })
 
 let currentPage
-let scope = `all`
+let scope = `page`
 let settings = {
   order: `descending`,
   sort: `count`
